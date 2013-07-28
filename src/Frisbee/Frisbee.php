@@ -30,12 +30,20 @@ class Frisbee
 		if(empty($name)){
 			throw new \Exception('must specify name of graph');
 		}
-		$response = $this->decode($this->http->{$this->action}('/graphs/'.$name));
+		$response = $this->decode($this->httpRequest('/graphs/'.$name));
 		return $response;
 	}
 
+	private function httpRequest($path){
+		$this->http->{$this->action}($path);
+		$this->http->fetch();
+		$buffers = $this->http->getBuffers('body');
+		$this->http->flush();
+		return $buffers[1];
+	}
+
 	public function graphs(){
-		$response = $this->decode($this->http->{$this->action}('/graphs'));
+		$response = $this->decode($this->httpRequest('/graphs'));
 		return $response['graphs'];
 	}
 
@@ -48,7 +56,7 @@ class Frisbee
 		else{
 			$id = empty($id) ? '' : '/'.$id;
 		}
-		$response = $this->decode($this->http->{$this->action}('/graphs/'.$this->graph.'/edges'.$id));
+		$response = $this->decode($this->httpRequest('/graphs/'.$this->graph.'/edges'.$id));
 		return $response['results'];
 	}
 
@@ -62,7 +70,7 @@ class Frisbee
 			$id = empty($id) ? '' : '/'.$id;
 			$command = empty($command) ? '' : '/'.$command;
 		}
-		$response = $this->decode($this->http->{$this->action}('/graphs/'.$this->graph.'/vertices'.$id.$command));
+		$response = $this->decode($this->httpRequest('/graphs/'.$this->graph.'/vertices'.$id.$command));
 		return $response['results'];
 	}
 
@@ -74,22 +82,22 @@ class Frisbee
 			$tmp .= 'key='.$data['key'];
 			$tmp .= 'value='.$data['value'];
 		}
-		$response = $this->decode($this->http->{$this->action}('/indices/'.$this->graph.'/indices'));
+		$response = $this->decode($this->httpRequest('/indices/'.$this->graph.'/indices'));
 		return $response['keys'];
 	}
 
 	public function keyindices(){
-		$response = $this->decode($this->http->{$this->action}('/graphs/'.$this->graph.'/keyindices/'));
+		$response = $this->decode($this->httpRequest('/graphs/'.$this->graph.'/keyindices/'));
 		return $response['keys'];
 	}
 
 	public function edgeKeys(){
-		$response = $this->decode($this->http->{$this->action}('/graphs/'.$this->graph.'/keyindices/edge'));
+		$response = $this->decode($this->httpRequest('/graphs/'.$this->graph.'/keyindices/edge'));
 		return $response['results'];
 	}
 
 	public function vertexKeys(){
-		$response = $this->decode($this->http->{$this->action}('/graphs/'.$this->graph.'/keyindices/vertex'));
+		$response = $this->decode($this->httpRequest('/graphs/'.$this->graph.'/keyindices/vertex'));
 		return $response['results'];
 	}
 
